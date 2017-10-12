@@ -1,0 +1,46 @@
+version: '2.1'
+services:
+
+  portainer:
+    image: portainer/portainer
+    restart: always
+    container_name: dc_portainer
+#    ports:
+#     - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-9000}:${HTTP_PORT:-9000}"
+#    command: --templates http://templates/templates.json
+    command: --templates http://templates/templates.json
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/portainer/data:/data
+    environment:
+      - VIRTUAL_HOST=${PUBLIC_FQDN}
+      - VIRTUAL_PORT=${HTTP_PORT:-9000}
+      - LETSENCRYPT_HOST=${PUBLIC_FQDN}
+      - LETSENCRYPT_EMAIL=${ADMIN_MAIL}
+    links:
+#     - portainer:dc_portainer
+     - templates:dc_portainer_templates
+#     - watchtower:dc_portainer_watchtower
+
+  templates:
+    image: portainer/templates
+    restart: always
+    container_name: "dc_portainer_templates"
+#    links:
+#     - portainer:dc_portainer
+#     - templates:dc_portainer_templates
+#     - watchtower:dc_portainer_watchtower
+
+  watchtower:
+    image: centurylink/watchtower
+    restart: always
+    container_name: "dc_portainer_watchtower"
+    command: --cleanup dc_portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+     - portainer:dc_portainer
+#     - templates:dc_portainer_templates
+#     - watchtower:dc_portainer_watchtower
+
+
