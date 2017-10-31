@@ -7,8 +7,7 @@ services:
     container_name: dc_portainer
 #    ports:
 #     - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-9000}:${HTTP_PORT:-9000}"
-#    command: --templates http://templates/templates.json
-    command: --templates http://templates/templates.json
+    command: --templates http://templates/templates.json --host=unix:///var/run/docker.sock --admin-password ${ENC_PORTAINER_PASS}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/portainer/data:/data
@@ -18,18 +17,12 @@ services:
       - LETSENCRYPT_HOST=${PUBLIC_FQDN}
       - LETSENCRYPT_EMAIL=${ADMIN_MAIL}
     links:
-#     - portainer:dc_portainer
      - templates:dc_portainer_templates
-#     - watchtower:dc_portainer_watchtower
 
   templates:
     image: portainer/templates
     restart: always
     container_name: "dc_portainer_templates"
-#    links:
-#     - portainer:dc_portainer
-#     - templates:dc_portainer_templates
-#     - watchtower:dc_portainer_watchtower
 
   watchtower:
     image: centurylink/watchtower
@@ -40,7 +33,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
      - portainer:dc_portainer
-#     - templates:dc_portainer_templates
-#     - watchtower:dc_portainer_watchtower
-
 
