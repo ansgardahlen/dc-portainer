@@ -32,7 +32,7 @@ DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
 HTTP_PORT=9000
 PORTAINER_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-ENC_PORTAINER_PASS=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $PORTAINER_PASS | cut -d ":" -f 2)
+ENC_PORTAINER_PASS="$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $PORTAINER_PASS | cut -d ":" -f 2)"
 
 
 cat << EOF > portainer.conf
